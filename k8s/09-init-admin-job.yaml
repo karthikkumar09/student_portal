@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-admin
+  namespace: student-portal
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init-admin
+        image: student-portal/student-service:latest
+        command: ["python", "setup_admin.py"]
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef:
+              name: student-portal-config
+              key: MONGO_URI
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: student-portal-secrets
+              key: JWT_SECRET_KEY
+  backoffLimit: 4

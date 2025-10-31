@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: student-portal-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - student-portal-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  student-service:
+    build:
+      context: ./backend/student-service
+      dockerfile: Dockerfile
+    container_name: student-portal-student-service
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production-2024
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - student-portal-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  course-service:
+    build:
+      context: ./backend/course-service
+      dockerfile: Dockerfile
+    container_name: student-portal-course-service
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production-2024
+      - ENROLLMENT_SERVICE_URL=http://enrollment-service:8002
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - student-portal-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  enrollment-service:
+    build:
+      context: ./backend/enrollment-service
+      dockerfile: Dockerfile
+    container_name: student-portal-enrollment-service
+    ports:
+      - "8002:8002"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production-2024
+      - STUDENT_SERVICE_URL=http://student-service:8001
+      - COURSE_SERVICE_URL=http://course-service:8000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      student-service:
+        condition: service_healthy
+      course-service:
+        condition: service_healthy
+    networks:
+      - student-portal-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_STUDENT_SERVICE_URL=http://localhost:8001
+        - VITE_COURSE_SERVICE_URL=http://localhost:8000
+        - VITE_ENROLLMENT_SERVICE_URL=http://localhost:8002
+    container_name: student-portal-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - student-service
+      - course-service
+      - enrollment-service
+    networks:
+      - student-portal-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  init-admin:
+    build:
+      context: ./backend/student-service
+      dockerfile: Dockerfile
+    container_name: student-portal-init-admin
+    command: ["python", "setup_admin.py"]
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production-2024
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - student-portal-network
+    restart: "no"
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  student-portal-network:
+    driver: bridge

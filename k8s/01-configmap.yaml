@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: student-portal-config
+  namespace: student-portal
+data:
+  MONGO_URI: "mongodb://mongodb:27017"
+  STUDENT_SERVICE_URL: "http://student-service:8001"
+  COURSE_SERVICE_URL: "http://course-service:8000"
+  ENROLLMENT_SERVICE_URL: "http://enrollment-service:8002"
