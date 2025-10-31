@@ -79,7 +79,22 @@ The backend services are also accessible at the following addresses:
 -   **Course Service:** [http://localhost:8000](http://localhost:8000)
 -   **Enrollment Service:** [http://localhost:8002](http://localhost:8002)
 
-### 5. Stopping the Application
+### 5. Login Credentials
+
+#### Admin Login
+
+A default admin user is created automatically when the `student-service` starts up for the first time. You can use the following credentials to log in as an administrator:
+
+-   **Email:** `admin@example.com`
+-   **Password:** `admin123`
+
+**Important:** For production environments, it is highly recommended to change these default credentials immediately after the first login.
+
+#### Student Login
+
+There are no default student accounts. You will need to register a new student account through the application's frontend.
+
+### 6. Stopping the Application
 
 To stop the application and remove the containers, run the following command:
 
