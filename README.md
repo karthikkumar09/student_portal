@@ -21,27 +21,77 @@ This is a full-stack student portal application that allows students to register
 
 Before you begin, ensure you have the following installed on your system:
 
--   [Docker](https://docs.docker.com/get-docker/)
--   [Docker Compose](https://docs.docker.com/compose/install/)
+-   [Docker](https://docs.docker.com/get-docker/): A containerization platform.
+-   [Docker Compose](https://docs.docker.com/compose/install/): A tool for defining and running multi-container Docker applications.
 
 ## Getting Started
 
-To get the project up and running, follow these steps:
+Follow these steps to get the project up and running on your local machine.
 
-1.  **Clone the repository:**
+### 1. Clone the Repository
 
-    ```bash
-    git clone https://github.com/your-username/student-portal.git
-    cd student-portal
-    ```
+First, you need to clone the project's repository to your local machine. You can do this by running the following command in your terminal:
 
-2.  **Run the application:**
+```bash
+git clone https://github.com/your-username/student-portal.git
+```
 
-    ```bash
-    docker-compose up
-    ```
+This will create a new directory named `student-portal` with all the project files.
 
-    This command will build the Docker images for each service and start the application. The frontend will be available at `http://localhost`.
+### 2. Navigate to the Project Directory
+
+Next, navigate to the newly created project directory:
+
+```bash
+cd student-portal
+```
+
+All subsequent commands should be run from this directory.
+
+### 3. Run the Application
+
+To start the application, run the following command:
+
+```bash
+docker-compose up
+```
+
+This command will:
+-   Build the Docker images for each service (frontend, student-service, etc.). This might take a few minutes the first time you run it.
+-   Start all the services in the correct order.
+-   Display the logs from all the services in your terminal.
+
+To run the application in the background (detached mode), you can use the `-d` flag:
+
+```bash
+docker-compose up -d
+```
+
+### 4. Access the Application
+
+Once all the services are running, you can access the application in your web browser:
+
+-   **Frontend:** [http://localhost](http://localhost)
+
+The backend services are also accessible at the following addresses:
+
+-   **Student Service:** [http://localhost:8001](http://localhost:8001)
+-   **Course Service:** [http://localhost:8000](http://localhost:8000)
+-   **Enrollment Service:** [http://localhost:8002](http://localhost:8002)
+
+### 5. Stopping the Application
+
+To stop the application and remove the containers, run the following command:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove the containers, but it will not delete the data in the database, as it is stored in a Docker volume.
+
+## Troubleshooting
+
+-   **Port conflicts:** If you have another application running on port 80, 8000, 8001, 8002, or 27017, you will need to stop it before running this project. You can also change the ports in the `docker-compose.yml` file.
 
 ## Services
 
