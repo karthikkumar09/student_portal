@@ -92,7 +92,12 @@ A default admin user is created automatically when the `student-service` starts 
 
 #### Student Login
 
-There are no default student accounts. You will need to register a new student account through the application's frontend.
+You will need to register a new student account through the application's frontend. Once registered, you can use your chosen credentials to log in.
+
+**Example Student Credentials (after registration):**
+
+-   **Email:** `karthik@gmail.com`
+-   **Password:** `karthik123`
 
 ### 6. Stopping the Application
 
@@ -114,6 +119,7 @@ The application is composed of the following services:
 
 -   **`student-service`:** Manages student authentication and profiles.
 -   **`course-service`:** Manages course information.
+
 -   **`enrollment-service`:** Manages student enrollments in courses.
 -   **`frontend`:** The React-based user interface.
 -   **`mongodb`:** The database for the application.
